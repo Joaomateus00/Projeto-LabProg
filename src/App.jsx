@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import image from './assets/loginback.jpg';
-
+import './App.css';
 function App() {
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
@@ -9,37 +9,34 @@ function App() {
     const [mostrarPopup, setMostrarPopup] = useState(false);
     const botaoDesabilitado = email.trim() === '' || senha.trim() === '';
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setMostrarPopup(true);
+
+        const dadosLogin = { email, senha };
+
+        try {
+            const resposta = await fetch('http://localhost:3000/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dadosLogin)
+            });
+            if (resposta.ok) {
+                setMostrarPopup(true);
+            } else {
+                alert('Login ou senha inválidos');
+            }
+        } catch (error) {
+            console.error('Erro ao tentar fazer login:', error);
+        }
+
     };
 
     return (
-        <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            minHeight: '100vh', 
-            width: '100%',      
-            fontFamily: 'Arial, sans-serif',
-            backgroundImage: `url(${image})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            color: 'white'      
+        <div className="container-login" style={{            
+            backgroundImage: `url(${image})`,                  
         }}>
-            <form onSubmit={handleSubmit} style={{
-                border: '1px solid #444', 
-                padding: '30px',
-                borderRadius: '12px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '15px',
-                width: '320px',
-                backgroundColor: 'rgba(0, 0, 0, 0.85)', 
-                boxShadow: '0 8px 32px rgba(0,0,0,1)'
-            }}>
-                <h2 style={{ textAlign: 'center' }}>Login</h2>
+            <form className="form-login"  onSubmit={handleSubmit}>
+                <h2 className="login">Login</h2>
 
                 <label>E-mail:</label>
                 <input type="email"
@@ -55,51 +52,21 @@ function App() {
                     value={senha}
                     onChange={(e) => setSenha(e.target.value)}/>
 
-                <button type="submit" style={{
-                    marginTop: '10px',
-                    padding: '10px',
+                <button className="botton-submit" type="submit" style={{
                     cursor: botaoDesabilitado ? 'not-allowed' : 'pointer',
                     backgroundColor: botaoDesabilitado ? '#555' : '#007bff',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    transition: 'background-color 0.3s'
                 }}>
                     Entrar
                 </button>
             </form>
 
             {mostrarPopup && (
-                <div style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    backgroundColor: 'rgba(0,0,0,0.5)',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                }}>
-                    <div style={{
-                        backgroundColor: 'white',
-                        padding: '30px',
-                        borderRadius: '10px',
-                        textAlign: 'center',
-                        boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
-                    }}>
-                        <h3 style={{ color: 'green' }}>✅ Sucesso!</h3>
-                        <p style={{ color: 'black' }}>O login foi realizado com êxito.</p>
-                        <button
-                            onClick={() => setMostrarPopup(false)}
-                            style={{
-                                padding: '8px 20px',
-                                cursor: 'pointer',
-                                backgroundColor: '#333',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '4px'
-                            }}
+                <div className="pop-up">
+                    <div className="container-popup" >
+                        <h3 style={{ color: 'green' }}>✅ Logado!</h3>
+                        <p style={{ color: 'black' }}>Login realizado com sucesso.</p>
+                        <button className="botton-popup"
+                            onClick={() => setMostrarPopup(false)} 
                         >
                             Fechar
                         </button>
