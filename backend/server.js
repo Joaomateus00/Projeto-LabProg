@@ -63,7 +63,9 @@ app.post('/login', async (req, res)=>{
         const userExists = await usuarios.findOne({ email });
 
         if(userExists){
-            if(userExists.senha === senha){
+            const passwordMatch = await bcrypt.compare(senha,userExists.senha);
+
+            if(passwordMatch){
                 return res.status(200).json({
                     message: 'Login bem sucedido'
                 });
