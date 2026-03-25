@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 function RegisterPage() {
+
   const [email,setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const navigate = useNavigate();
@@ -13,11 +14,24 @@ function RegisterPage() {
   const [mostrarPopup,setMostrarPopup] = useState(false);
   const botaoDesabilitado = email.trim() === '' || senha.trim() === '';
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Dados do registro:", {email, senha})
-    setMostrarPopup(true);
-  };
+    const handleRegister = async (e) => {
+        e.preventDefault();
+
+        const response = await fetch('http://localhost:3001/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, senha }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert("Cadastro realizado!");
+            // Redirecionar para o login, por exemplo
+        } else {
+            alert(data.message);
+        }
+    };
 
   const Redirecionarlogin = () => {
     setMostrarPopup(false);
@@ -26,7 +40,7 @@ function RegisterPage() {
 
     return (
         <div className="container-login" style={{ backgroundImage: `url(${image})` }}>
-            <form className="form-login" onSubmit={handleSubmit}>
+            <form className="form-login" onSubmit={handleRegister}>
                 <h2 className="login">Criar Conta</h2>
 
                 <label>E-mail:</label>
