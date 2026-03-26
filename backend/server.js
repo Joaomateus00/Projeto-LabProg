@@ -3,12 +3,18 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const { MongoClient } = require('mongodb');
 const app = express();
+const jwt = require('jsonwebtoken');
+const secretKey = "lab_programacao";
+
 
 app.use(cors());
 app.use(express.json());
 
-const uri = "mongodb+srv://joaomateus_db_user:thesedays@clusterfacul.wejdmok.mongodb.net/?appName=ClusterFacul";
-const client = new MongoClient(uri);
+
+const uri = "mongodb://joaomateus_db_user:thesedays@ac-nwbhssp-shard-00-00.wejdmok.mongodb.net:27017/ClusterFacul?authSource=admin&ssl=true";
+const client = new MongoClient(uri, {
+    family: 4
+});
 
 async function connectDB() {
     try {
@@ -65,11 +71,16 @@ app.post('/login', async (req, res)=>{
         if(userExists){
             const passwordMatch = await bcrypt.compare(senha,userExists.senha);
 
-            if(passwordMatch){
+            if (passwordMatch) {
+                const token = jwt.sign ({
+                    userId: userExists._id,
+                    email: userExists.email
+                }, secretKey, { expiresIn: '10s'}
+                ); 
                 return res.status(200).json({
                     message: 'Login bem sucedido'
                 });
-            }else{
+            } else{
                 return res.status(400).json({
                     message: 'senha incorreta'
                 });

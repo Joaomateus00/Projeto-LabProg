@@ -42,6 +42,9 @@ function LoginContent() {
             });
 
             if (resposta.ok) {
+                const data = await resposta.json();
+                localStorage.setItem('token', data.token);
+                alert("Login Realizado com Sucesso");
                 navigate('/home'); 
             } else {
                 alert('Login ou senha inválidos');
