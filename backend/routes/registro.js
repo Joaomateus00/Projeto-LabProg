@@ -3,23 +3,22 @@ const bcrypt = require('bcrypt');
 const router = express.Router();
 
 
-
-const getUsersCollection = (req) => {
-    const client = req.app.get('mongoClient');
-    const database = client.db("ClusterFacul");
-    return database.collection("usuarios");
-};
-
-
 router.post('/register', async (req, res) => {
     const { email, senha } = req.body;
     try {
+        const client = req.app.get('mongoClient');
 
-        const usuarios = getUsersCollection(req);
+        if (!client) {
+            return res.status(500).json({ message: 'Erro de conexão com o banco de dados' });
+        }
+
+        const database = client.db("ClusterFacul");
+        const usuarios = database.collection("usuarios");
         const userExists = await usuarios.findOne({ email });
         if (userExists) {
             return res.status(400).json({ message: 'Usuário já existe' });
         }
+        
 
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(senha, saltRounds);
@@ -27,7 +26,7 @@ router.post('/register', async (req, res) => {
         const newUser = {
             email,
             senha: hashedPassword,
-            dateCriation: new Date()
+            dateCreation: new Date()
         };
 
         await usuarios.insertOne(newUser);

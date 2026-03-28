@@ -1,10 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-const bcrypt = require('bcrypt');
 const { MongoClient } = require('mongodb');
 const app = express();
-const jwt = require('jsonwebtoken');
-const secretKey = "lab_programacao";
 const registroRoute = require('./routes/registro');
 const loginRoute = require('./routes/login');
 
@@ -20,7 +17,7 @@ const client = new MongoClient(uri, {
 async function connectDB() {
     try {
         await client.connect();
-        app.set('MongoCLient', client);
+        app.set('mongoClient', client);
         console.log("Conectado ao MongoDB ");
     } catch (error) {
         console.log("Erro ao conectar ao MongoDB: ", error);

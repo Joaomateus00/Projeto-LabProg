@@ -11,7 +11,15 @@ router.post('/login',async (req, res)=>{
     const {email,senha} = req.body;
 
     try{
-        const database = client.db('ClusterFacul');
+        const client = req.app.get('mongoClient')
+
+        if (!client) {
+            console.error("Erro de Conexao MongoClient");
+            return res.status(500).json({ message: 'Erro de conexão com o banco de dados' });
+        }
+
+        const database = client.db("ClusterFacul");
+
         const usuarios = database.collection('usuarios');
 
         const userExists = await usuarios.findOne({ email });
