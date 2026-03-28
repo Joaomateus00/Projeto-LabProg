@@ -35,7 +35,7 @@ function LoginContent() {
         const dadosLogin = { email, senha };
 
         try {
-            const resposta = await fetch('http://localhost:3001/login', {
+            const resposta = await fetch('http://localhost:3001/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dadosLogin)

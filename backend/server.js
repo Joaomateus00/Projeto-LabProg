@@ -5,7 +5,8 @@ const { MongoClient } = require('mongodb');
 const app = express();
 const jwt = require('jsonwebtoken');
 const secretKey = "lab_programacao";
-
+const registroRoute = require('./routes/registro');
+const loginRoute = require('./routes/login');
 
 app.use(cors());
 app.use(express.json());
@@ -19,6 +20,7 @@ const client = new MongoClient(uri, {
 async function connectDB() {
     try {
         await client.connect();
+        app.set('MongoCLient', client);
         console.log("Conectado ao MongoDB ");
     } catch (error) {
         console.log("Erro ao conectar ao MongoDB: ", error);
@@ -28,76 +30,8 @@ async function connectDB() {
 connectDB();
 
 
-app.post('/register', async (req, res) => {
-    const { email, senha } = req.body;
-    try {
-        const database = client.db("ClusterFacul");
-        const usuarios = database.collection("usuarios");
-
-
-        const userExists = await usuarios.findOne({ email });
-        if (userExists) {
-            return res.status(400).json({ message: 'Usuário já existe' });
-        }
-
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(senha, saltRounds);
-
-        const newUser = {
-            email,
-            senha: hashedPassword,
-            dateCriation: new Date()
-        };
-
-        await usuarios.insertOne(newUser);
-        res.status(201).json({ message: 'Usuário cadastrado com sucesso!' });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Erro ao cadastrar usuario' });
-    }
-});
-
-
-app.post('/login', async (req, res)=>{
-    const {email,senha} = req.body;
-
-    try{
-        const database = client.db('ClusterFacul');
-        const usuarios = database.collection('usuarios');
-
-        const userExists = await usuarios.findOne({ email });
-
-        if(userExists){
-            const passwordMatch = await bcrypt.compare(senha,userExists.senha);
-
-            if (passwordMatch) {
-                const token = jwt.sign ({
-                    userId: userExists._id,
-                    email: userExists.email
-                }, secretKey, { expiresIn: '10s'}
-                ); 
-                return res.status(200).json({
-                    message: 'Login bem sucedido'
-                });
-            } else{
-                return res.status(400).json({
-                    message: 'senha incorreta'
-                });
-            }            
-        }else {
-                return res.status(400).json({
-                    message: 'usuario incorreto'
-                });
-            }
-
-    } catch (error) {
-        console.log("Erro no login", error);
-        res.status(500).json({
-            message: 'Erro interno no servidor'
-        });
-    }
-});
+app.use('/auth', registroRoute);
+app.use('/auth',loginRoute);
 
 
 const PORT = 3001;
