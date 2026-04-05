@@ -4,10 +4,12 @@ const { MongoClient } = require('mongodb');
 const app = express();
 const registroRoute = require('./routes/registro');
 const loginRoute = require('./routes/login');
+const verificarToken = require('./middleware/auth');
+const transacoesRoute = require('./routes/transacoes');
+
 
 app.use(cors());
 app.use(express.json());
-
 
 const uri = "mongodb://joaomateus_db_user:thesedays@ac-nwbhssp-shard-00-00.wejdmok.mongodb.net:27017/ClusterFacul?authSource=admin&ssl=true";
 const client = new MongoClient(uri, {
@@ -26,10 +28,21 @@ async function connectDB() {
 
 connectDB();
 
+app.get('/public', (req, res) => {
+    res.json({ message: 'Acesso público' });
+});
+
+app.get('/dados-dashboard', verificarToken, (req, res) => {
+    res.json({
+        message: 'Acesso Permitido',
+        dadosUsuario: req.usuario
+    });
+});
+
 
 app.use('/auth', registroRoute);
 app.use('/auth',loginRoute);
-
+app.use('/api/transacoes', transacoesRoute);
 
 const PORT = 3001;
 

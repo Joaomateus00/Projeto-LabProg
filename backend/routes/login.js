@@ -31,10 +31,11 @@ router.post('/login',async (req, res)=>{
                 const token = jwt.sign ({
                     userId: userExists._id,
                     email: userExists.email
-                }, secretKey, { expiresIn: '10s'}
+                }, secretKey, { expiresIn: '1h'}
                 ); 
                 return res.status(200).json({
-                    message: 'Login bem sucedido'
+                    message: 'Login bem sucedido',
+                    token
                 });
             } else{
                 return res.status(400).json({
