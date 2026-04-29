@@ -14,7 +14,12 @@ export const HomePage = () => {
     const [novaDescricao, setNovaDescricao] = useState('');
     const [novoValor, setNovoValor] = useState('');
     const [novoTipo, setNovoTipo] = useState('receita'); 
-
+    const [novaCategoria, setNovaCategoria] = useState('alimentação');
+    const [novaCategoria, setNovaCategoria] = useState('streamings');
+    const [novaCategoria, setNovaCategoria] = useState('combustivel');
+    const [novaCategoria, setNovaCategoria] = useState('saude');
+    const [novaCategoria, setNovaCategoria] = useState('lazer');
+    const [novaCategoria, setNovaCategoria] = useState('parcelados');
     
     const carregarDadosFinanceiros = async () => {
         const token = localStorage.getItem('token');
@@ -36,10 +41,22 @@ export const HomePage = () => {
             }
 
             const dados = await resposta.json();
-            setResumo(dados.resumo);
-            setTransacoes(dados.transacoes);
+
+            // Verifica se deu tudo certo no backend
+            if (resposta.ok) {
+                setResumo(dados.resumo);
+                setTransacoes(dados.transacoes);
+            } else {
+                // Se o backend retornou erro, mostra no console e impede a tela branca
+                console.error("O Backend retornou um erro:", dados);
+                setResumo({ totalReceitas: 0, totalDespesas: 0, saldoAtual: 0 });
+                setTransacoes([]);
+                alert("Erro ao buscar dados do servidor: " + (dados.message || "Desconhecido"));
+            }
         } catch (error) {
-            console.error("Erro ao buscar dados:", error);
+            console.error("Erro na comunicação com a API:", error);
+            setResumo({ totalReceitas: 0, totalDespesas: 0, saldoAtual: 0 });
+            setTransacoes([]);
         } finally {
             setCarregando(false);
         }
@@ -67,7 +84,8 @@ export const HomePage = () => {
                 body: JSON.stringify({
                     descricao: novaDescricao,
                     valor: novoValor,
-                    tipo: novoTipo
+                    tipo: novoTipo,
+                    categoria: novaCategoria
                 })
             });
 
@@ -76,7 +94,12 @@ export const HomePage = () => {
                 setNovaDescricao('');
                 setNovoValor('');
                 setNovoTipo('despesa');
-
+                setNovaCategoria('alimentação');
+                setNovaCategoria('streamings');
+                setNovaCategoria('combustivel');
+                setNovaCategoria('saude');
+                setNovaCategoria('lazer');
+                setNovaCategoria('parcelados');
                 
                 carregarDadosFinanceiros();
             } else {
@@ -94,7 +117,8 @@ export const HomePage = () => {
     };
 
     const formatarMoeda = (valor) => {
-        return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        const valorNumerico = Number(valor);
+        return valorNumerico.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     };
 
     if (carregando) {
@@ -163,6 +187,14 @@ export const HomePage = () => {
                             <select value={novoTipo} onChange={(e) => setNovoTipo(e.target.value)}>
                                 <option value="despesa">Despesa</option>
                                 <option value="receita">Receita</option>
+                            </select>
+                            <select value={novaCategoria} onChange={(e) => setNovaCategoria(e.target.value)}>
+                                <option value="alimentação">Alimentação</option>
+                                <option value="streamings">Streamings</option>
+                                <option value="combustivel">Combustível</option>
+                                <option value="saude">Saúde</option>
+                                <option value="lazer">Lazer</option>
+                                <option value="parcelados">Parcelados</option>
                             </select>
                             <button type="submit" className="btn-add">Adicionar</button>
                         </form>
