@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const verificarToken = require('../middleware/auth');
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 
 router.post('/', verificarToken, async (req, res) => {
 
     try {
-        const { descricao, valor, tipo } = req.body;
+        const { descricao, valor, tipo, categoria} = req.body;
         const client = req.app.get('mongoClient');
         const db = client.db('ClusterFacul');
         const transacoesCollection = db.collection('transacoes');
@@ -17,6 +17,7 @@ router.post('/', verificarToken, async (req, res) => {
             descricao,
             valor: Number(valor),
             tipo,
+            categoria,
             data: new Date()
         };
 
@@ -55,6 +56,30 @@ router.get('/', verificarToken, async (req, res) => {
         });
     } catch (error) {
         console.error('Erro ao buscar transações:', error);
+        res.status(500).json({ message: 'Erro interno do Servidor' });
+    }
+});
+
+router.delete('/:id', verificarToken, async (req, res) => {
+    try {
+        const client = req.app.get('mongoClient');
+        const db = client.db('ClusterFacul');
+        const transacoesCollection = db.collection('transacoes');
+
+
+        const result = await transacoesCollection.deleteOne({
+            _id: new ObjectId(req.params.id),
+            usuarioId: req.usuario.userId
+        });
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: 'Transação não encontrada' });
+        }
+
+        res.json({ message: 'Transação deletada com sucesso' });
+
+    } catch (error) {
+        console.error('Erro ao deletar transação:', error);
         res.status(500).json({ message: 'Erro interno do Servidor' });
     }
 });
