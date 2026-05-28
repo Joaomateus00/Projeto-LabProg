@@ -3,7 +3,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recha
 
 export const Relatorios = ({ transacoes }) => {
     
-    const dadosAgrupados = transacoes
+    const dadosAgrupados = (transacoes || [])
         .filter(t => t.tipo === 'despesa')
         .reduce((acc, t) => {
             const index = acc.findIndex(item => item.name === t.categoria);

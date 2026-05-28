@@ -1,4 +1,18 @@
+.nav-button {
+    background: none;
+    border: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    padding: 10px;
+}
 
+.active .nav-button {
+    font-weight: bold;
+    color: #3498db; /* Cor de destaque */
+}
 
 .dashboard-container {
     display: flex;

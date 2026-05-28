@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import RegisterPage from './registerpage';
 import HomePage from './homepage'
 
+import { Relatorios } from './relatorios';
 
 function App() {
     return (
