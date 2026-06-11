@@ -8,10 +8,10 @@ router.post('/', verificarToken, async (req, res) => {
         const corpo = req.body || {};
         const { descricao, valor, tipo, categoria } = corpo;
 
-        // 1. Primeiro transformamos o valor em número (resolve o problema das aspas "45")
+        
         const valorNumerico = Number(valor);
 
-        // 2. Agora fazemos a validação correta e segura
+        
         if (!descricao || descricao.trim() === '' || isNaN(valorNumerico) || valor === undefined || valor === null || valor === '') {
             return res.status(400).json({ message: 'Descrição e valor são obrigatórios.' });
         }
