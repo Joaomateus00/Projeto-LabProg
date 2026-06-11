@@ -1,3 +1,5 @@
-# React + Vite
+# Sistema de Gestão Financeira 💰
 
-We working in a project using React and Vite. This project is a simple web application that demonstrates the use of React for building user interfaces and Vite for fast development and build processes.
+Um aplicativo intuitivo criado para ajudar as pessoas a organizarem o seu dinheiro, controlarem os seus gastos e acompanharem o seu saldo diário de forma simples e visual. Usando HTML, Css,Javascript, React,Node e MongoDb.
+
+
