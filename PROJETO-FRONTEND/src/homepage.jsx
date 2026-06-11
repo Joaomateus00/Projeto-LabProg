@@ -57,21 +57,31 @@ export const HomePage = () => {
     const handleAdicionarTransacao = async (e) => {
         e.preventDefault();
 
+        // LOG DE RASTREAMENTO: Vamos ver o que tem nos inputs agora
+        console.log("--- DADOS REAIS DO FORMULÁRIO ---");
+        console.log("Descrição:", novaDescricao, "Tipo:", typeof novaDescricao);
+        console.log("Valor:", novoValor, "Tipo:", typeof novoValor);
+        console.log("---------------------------------");
+
         try {
             await api.post('/api/transacoes', {
-                descricao: novaDescricao,
+                descricao: novaDescricao.trim(), // Remove espaços vazios acidentais
                 valor: novoValor,
                 tipo: novoTipo,
                 categoria: novaCategoria
+            }, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             });
-            
+
             setNovaDescricao('');
             setNovoValor('');
             setNovoTipo('despesa');
-            setNovaCategoria('alimentação');                
-            
+            setNovaCategoria('alimentação');
+
             carregarDadosFinanceiros();
-            
+
         } catch (error) {
             console.error("Erro ao enviar dados:", error);
             alert("Erro ao registrar transação.");

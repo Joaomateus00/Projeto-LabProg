@@ -10,6 +10,7 @@ const transacoesRoute = require('./routes/transacoes');
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const uri = process.env.MONGO_URI || "mongodb://joaomateus_db_user:thesedays@ac-nwbhssp-shard-00-00.wejdmok.mongodb.net:27017/ClusterFacul?authSource=admin&ssl=true";
 const client = new MongoClient(uri, {

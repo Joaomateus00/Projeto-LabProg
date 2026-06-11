@@ -4,31 +4,45 @@ const verificarToken = require('../middleware/auth');
 const { MongoClient, ObjectId } = require('mongodb');
 
 router.post('/', verificarToken, async (req, res) => {
-
     try {
-        const { descricao, valor, tipo, categoria} = req.body;
+        const corpo = req.body || {};
+        const { descricao, valor, tipo, categoria } = corpo;
+
+        // 1. Primeiro transformamos o valor em número (resolve o problema das aspas "45")
+        const valorNumerico = Number(valor);
+
+        // 2. Agora fazemos a validação correta e segura
+        if (!descricao || descricao.trim() === '' || isNaN(valorNumerico) || valor === undefined || valor === null || valor === '') {
+            return res.status(400).json({ message: 'Descrição e valor são obrigatórios.' });
+        }
+
+        const usuarioId = req.usuario.userId || req.usuario.id;
+        if (!usuarioId) {
+            return res.status(401).json({ message: 'Usuário não identificado no Token de segurança.' });
+        }
+
         const client = req.app.get('mongoClient');
         const db = client.db('ClusterFacul');
         const transacoesCollection = db.collection('transacoes');
 
-
         const novaTransacao = {
-            usuarioId: req.usuario.userId,
-            descricao,
-            valor: Number(valor),
-            tipo,
-            categoria,
+            usuarioId,
+            descricao: descricao.trim(),
+            valor: valorNumerico, // Salva como número puro no MongoDB
+            tipo: tipo || 'despesa',
+            categoria: categoria || 'alimentação',
             data: new Date()
         };
 
         await transacoesCollection.insertOne(novaTransacao);
-        res.status(201).json({ message: 'Transação registrada com sucesso!' });
+        return res.status(201).json({ message: 'Transação registrada com sucesso!' });
 
     } catch (error) {
         console.error('Erro ao registrar transação:', error);
-        res.status(500).json({ message: 'Erro interno do Servidor' });
+        return res.status(500).json({ message: 'Erro interno do Servidor', error: error.message });
     }
 });
+
 
 
 router.get('/', verificarToken, async (req, res) => {
