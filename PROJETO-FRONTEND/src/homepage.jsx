@@ -17,7 +17,7 @@ export const HomePage = () => {
     const [novoTipo, setNovoTipo] = useState('receita'); 
     const [novaCategoria, setNovaCategoria] = useState('alimentação');
 
-    // 1. Função assíncrona separada para buscar os dados
+    
     const carregarDadosFinanceiros = async () => {
         const token = localStorage.getItem('token');
 
@@ -27,7 +27,7 @@ export const HomePage = () => {
         }
 
         try {
-            // O Axios já usa a porta 3001
+           
             const resposta = await api.get('/api/transacoes');
             const dados = resposta.data;
 
@@ -49,7 +49,7 @@ export const HomePage = () => {
         }
     };
 
-    // 2. useEffect chamando a função (sem usar await direto nele)
+    
     useEffect(() => {
         carregarDadosFinanceiros();
     }, []); 
@@ -57,7 +57,7 @@ export const HomePage = () => {
     const handleAdicionarTransacao = async (e) => {
         e.preventDefault();
 
-        // LOG DE RASTREAMENTO: Vamos ver o que tem nos inputs agora
+        
         console.log("--- DADOS REAIS DO FORMULÁRIO ---");
         console.log("Descrição:", novaDescricao, "Tipo:", typeof novaDescricao);
         console.log("Valor:", novoValor, "Tipo:", typeof novoValor);
